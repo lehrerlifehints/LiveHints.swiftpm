@@ -3,7 +3,7 @@ info:
   title: LiveHint server
   version: 0.1.0
 paths:
-  /:
+  /app/:
     get:
       summary: Get hints using a text prompt.
       parameters:
