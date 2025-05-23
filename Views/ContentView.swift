@@ -21,7 +21,7 @@ struct ContentView: View {
     
     var body: some View {
         VStack(alignment: .center) {
-            SwiftSpeech.RecordButton()
+            RecordButton()
                 .swiftSpeechToggleRecordingOnTap(locale: locale, animation: .snappy)
                 .isProcessing(isProcessing)
                 .onAppear {
@@ -29,25 +29,27 @@ struct ContentView: View {
                 }
                 .onRecognizeLatest(update: $text)
                 .onStopRecording { _ in
-                    isProcessing = true
+                    self.isProcessing = true
                     Task {
                         do {
                             let result = try await fetchHint(userInput: text)
                             await MainActor.run {
                                 answer = result
+                                self.isProcessing = false
                             }
                         } catch {
                             let result = "\(error)"
                             await MainActor.run {
                                 answer = result
+                                self.isProcessing = false
                             }
                         }
                     }
-                    isProcessing = false
                 }
             Text(text)
             if isProcessing {
-                ProgressView("Processing")
+                Text("Processing...")
+                    .foregroundStyle(.secondary)
             } else {
                 Text(answer)
             }
